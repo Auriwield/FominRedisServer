@@ -5,7 +5,7 @@ const router = require("./router");
 const logger = require("./logger");
 const port = process.env.PORT || 8081;
 
-ws.createServer({secure: true}, function (conn) {
+ws.createServer(function (conn) {
     logger.info("New connection");
 
     conn.on("text", command => {
