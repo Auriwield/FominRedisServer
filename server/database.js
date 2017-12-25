@@ -1,5 +1,6 @@
 const msg = require("./app_messages");
 const util = require('util');
+const minimatch = require("minimatch");
 const databases = {};
 const removeArrayItem = (arr, itemToRemove) => {
     return arr.filter(item => item !== itemToRemove)
@@ -99,6 +100,32 @@ module.exports = {
         let copy = JSON.parse(JSON.stringify(databases[token]));
         delete copy.lastAuth;
         return JSON.stringify(copy);
+    },
+
+    search: function (token, pattern) {
+        //1. Collect all tokens
+        pattern = pattern.replace("%s%", " ");
+        let dbs = this.getDbs(token);
+
+        let dbNames = Object.keys(dbs);
+
+        let result = {};
+
+        for (let i = 0; i < dbNames.length; i++) {
+            let dbName = dbNames[i];
+            let db = dbs[dbName];
+            let dbKeys = Object.keys(db);
+            let keys = [];
+            for (let j = 0; j < dbKeys.length; j++) {
+                let key = dbKeys[j];
+                if (minimatch(key, pattern)) {
+                    keys.push(key);
+                }
+            }
+            result[dbName] = keys;
+        }
+
+        return JSON.stringify(result);
     },
 
     lget: function (token, dbName, key) {
@@ -203,10 +230,14 @@ module.exports = {
     },
 
     increment: function () {
-        let token = arguments[0];
-        let dbName = arguments[1];
-        let key = arguments[2];
-        let value = arguments[3];
+        this.updateNumericValue([1].concat(arguments))
+    },
+
+    decrement: function () {
+        this.updateNumericValue([-1].concat(arguments))
+    },
+
+    updateNumericValue : function (addiction, token, dbName, key, value) {
 
         if (!this.exists(arguments)) {
             return msg.GetNotExists;
@@ -229,39 +260,8 @@ module.exports = {
             return msg.NAN;
         }
 
-        list[value] = ++listVal;
-
-        return listVal + "";
-    },
-
-    decrement: function () {
-        let token = arguments[0];
-        let dbName = arguments[1];
-        let key = arguments[2];
-        let value = arguments[3];
-
-        if (!this.exists(arguments)) {
-            return msg.GetNotExists;
-        }
-
-        if (!value) {
-            let v = this.get(token, dbName, key);
-            v = parseInt(v, 10);
-            if (isNaN(v)) {
-                return msg.NAN;
-            }
-            this.put(token, dbName, key, --v);
-            return v + "";
-        }
-
-        let list = this.lget(token, dbName, key);
-        let listVal = parseInt(list[value]);
-
-        if (isNaN(listVal)) {
-            return msg.NAN;
-        }
-
-        list[value] = --listVal;
+        listVal += addiction;
+        list[value] = listVal;
 
         return listVal + "";
     }

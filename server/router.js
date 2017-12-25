@@ -42,7 +42,8 @@ const commandMap = {
     LDEL:    db.ldel,
     UPDATE:  db.update,
     INCR:    db.increment,
-    DECR:    db.decrement
+    DECR:    db.decrement,
+    SEARCH:  db.search
 };
 
 function checkTokenIfNeed(command) {
