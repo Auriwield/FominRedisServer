@@ -1,0 +1,51 @@
+AUTH token
+  Creates token
+  ex. 'Auth gzaripov'
+  for ui version token specified through hash in url
+  and is adding !!automatically!! to command
+  ex. create db1 => create gzaripov db1
+
+CREATE token dbName
+  Creates db
+
+GET token dbName key
+  returns value for key
+
+PUT token dbName key value
+  creates or update key-value pair
+
+DEL token dbName key
+  deletes key
+
+EXISTS token dbName [key] [value]
+  returns true if item is exist, false otherwise
+
+GET_DBS token [dbName]
+  return all user dbs as JSON object
+  or specified dbs
+
+LGET token dbName key [index]
+  Get list or its value
+
+LPUT token dbName key values
+  ex. lput gza db1 names misha sasha dasha kolya
+
+LDEL token dbName key values
+  delete values from list
+
+INCR token dbName key [value]
+  increment key or list value
+
+DECR token dbName key [value]
+  decrement key or list value
+
+SEARCH token pattern
+  search key by specified pattern
+  * Matches 0 or more characters
+  ? Matches 1 character
+  [...] Matches a range of characters, similar to a RegExp range.
+  If the first character of the range is ! or ^ then it matches any character not in the range.
+  !(pattern|pattern|pattern) Matches anything that does not match any of the patterns provided.
+  ?(pattern|pattern|pattern) Matches zero or one occurrence of the patterns provided.
+  +(pattern|pattern|pattern) Matches one or more occurrences of the patterns provided.
+  *(a|b|c) Matches zero or more occurrences of the patterns provided

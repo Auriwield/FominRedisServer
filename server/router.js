@@ -49,7 +49,7 @@ const commandMap = {
 function checkTokenIfNeed(command) {
     if (command.name !== "AUTH"
         && command.name !== "HELP") {
-        return !db.exists(command.params[0]);
+        return !db._exists(command.params[0]);
     }
     return false;
 }

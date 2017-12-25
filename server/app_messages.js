@@ -2,11 +2,11 @@ module.exports = {
     "UnknownCommand":      "Unknown command. Send HELP command to get instructions",
     "AuthCreated":         "Successfully created token",
     "AuthExists":          "Welcome back!!!\nLast auth : %s",
-    "AuthNotExists":       "Token doesn't exists",
+    "AuthNotExists":       "Token doesn't _exists",
     "AuthInvalidToken":    "Token must be a string with 4 or more chars",
     "DbCreated":           "Successfully created database",
-    "DbExists":            "Such database is already exists",
-    "DbNotExists":         "%s doesn't dbExists.",
+    "DbExists":            "Such database is already _exists",
+    "DbNotExists":         "Db with name %s doesn't exist.",
     "PutSuccessful":       "Inserted.",
     "GetNotExists":        "Cannot find value for this key",
     "LGetNotExists":       "Cannot find list with such name",
@@ -17,7 +17,8 @@ module.exports = {
     "ListNotExits":        "Such list doesn't exist.",
     "UpdateNotExist":      "Cannot find subject for update.",
     "UpdateSuccessful":    "Successfully renamed.",
-    "UpdateAlreadyExists": "Such item already exists",
+    "UpdateAlreadyExists": "Such item already _exists",
     "UnknownError":        "Unknown Error",
-    "NAN":                 "Not a number"
+    "NAN":                 "Not a number",
+    "ExistsLengthLess2":   "You have to specify minimum two arguments"
 };

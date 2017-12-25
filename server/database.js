@@ -25,7 +25,7 @@ module.exports = {
     },
 
     createDb: function (token, dbName) {
-        if (!this.exists(token, dbName)) {
+        if (!this._exists(token, dbName)) {
             databases[token][dbName] = {};
             return msg.DbCreated;
         }
@@ -68,7 +68,7 @@ module.exports = {
         return msg.Deleted;
     },
 
-    exists: function () {
+    _exists: function () {
         let token = arguments[0];
         let dbName = arguments[1];
         let key = arguments[2];
@@ -96,10 +96,29 @@ module.exports = {
         return db[key].indexOf(value) !== -1;
     },
 
+    exists: function () {
+        if (arguments.length < 2) {
+            return msg.ExistsLengthLess2;
+        }
+        return JSON.stringify(this._exists.apply(this, arguments))
+    },
+
     getDbs: function (token) {
         let copy = JSON.parse(JSON.stringify(databases[token]));
         delete copy.lastAuth;
-        return JSON.stringify(copy);
+        if (!arguments[1]) {
+            return JSON.stringify(copy);
+        }
+        let dbs = arguments.splice(1);
+
+        let res = {};
+
+        for (let i = 0; i < dbs.length; i++) {
+            let db = dbs[i];
+            res[db] = copy[db];
+        }
+
+        return JSON.stringify(dbs);
     },
 
     search: function (token, pattern) {
@@ -128,8 +147,8 @@ module.exports = {
         return JSON.stringify(result);
     },
 
-    lget: function (token, dbName, key) {
-        if (!this.exists(token, dbName, key)) {
+    _lget: function (token, dbName, key) {
+        if (!this._exists(token, dbName, key)) {
             throw Error(msg.LGetNotExists);
         }
 
@@ -141,6 +160,16 @@ module.exports = {
         return list;
     },
 
+    lget: function (token, dbName, key, value) {
+        let list = this._lget(token, dbName, key);
+
+        if (value) {
+            list = list[value];
+        }
+
+        return JSON.stringify(list);
+    },
+
     lput: function () {
         let token = arguments[0];
         let dbName = arguments[1];
@@ -149,7 +178,7 @@ module.exports = {
 
         let list;
         try {
-            list = this.lget(token, dbName, key);
+            list = this._lget(token, dbName, key);
         } catch (err) {
             list = this.getDb(token, dbName)[key] = [];
         }
@@ -165,7 +194,7 @@ module.exports = {
         let key = arguments[2];
         let values = Array.prototype.slice.call(arguments, 3);
 
-        let list = this.lget(token, dbName, key);
+        let list = this._lget(token, dbName, key);
         let count;
 
         if (values.length === 0) {
@@ -191,14 +220,14 @@ module.exports = {
         let key = data[2];
         let value = data[3];
 
-        if (!this.exists(data.splice(1))) {
+        if (!this._exists(data.splice(1))) {
             throw new Error(msg.UpdateNotExist);
         }
         if (!newName) {
             newName = null;
         }
         if (value) {
-            let list = this.lget(token, dbName, key);
+            let list = this._lget(token, dbName, key);
             if (newName) {
                 list[value] = newName;
             }
@@ -209,7 +238,7 @@ module.exports = {
         }
         let db = this.getDb(token, dbName);
         if (key) {
-            if (this.exists(token, dbName, key)) {
+            if (this._exists(token, dbName, key)) {
                 return msg.UpdateAlreadyExists;
             }
             if (newName) {
@@ -218,7 +247,7 @@ module.exports = {
             delete db[key];
             return msg.UpdateSuccessful;
         }
-        if (this.exists(token, dbName)) {
+        if (this._exists(token, dbName)) {
             return msg.UpdateAlreadyExists;
         }
         if (newName) {
@@ -239,7 +268,7 @@ module.exports = {
 
     updateNumericValue : function (addiction, token, dbName, key, value) {
 
-        if (!this.exists(arguments)) {
+        if (!this._exists(arguments)) {
             return msg.GetNotExists;
         }
 
@@ -253,7 +282,7 @@ module.exports = {
             return v + "";
         }
 
-        let list = this.lget(token, dbName, key);
+        let list = this._lget(token, dbName, key);
         let listVal = parseInt(list[value]);
 
         if (isNaN(listVal)) {
