@@ -1,0 +1,9 @@
+Authorization
+    AUTH
+
+
+Database
+    GET DBKEY KEY
+    PUT DBKEY KEY VALUE
+    DEL DBKEY KEY
+    EXISTS DBKEY KEY
